@@ -34,7 +34,7 @@ const allowedOrigins = [
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: (origin, callback) => {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
@@ -59,7 +59,7 @@ app.use(
 // OnaF6EGHhgYY9OPv
 
 // Routes
-app.get("/health", (req, res) => {
+app.get("/health", (req: express.Request, res: express.Response) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
