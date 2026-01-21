@@ -14,9 +14,11 @@ import recommendationRouter from "./routes/recommendation";
 import userRouter from "./routes/user";
 import reportRouter from "./routes/report";
 import quoteRouter from "./routes/quote";
+import adminRouter from "./routes/admin";
 import { connectDB } from "./utils/db";
 import { inngest } from "./inngest/index";
 import { functions as inngestFunctions } from "./inngest/functions";
+import { seedDefaultAdmin, shouldSeedAdmin } from "./utils/seedAdmin";
 
 // Load environment variables
 dotenv.config();
@@ -34,7 +36,7 @@ const allowedOrigins = [
 // Middleware
 app.use(helmet()); // Security headers
 app.use(cors({
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
@@ -59,7 +61,7 @@ app.use(
 // OnaF6EGHhgYY9OPv
 
 // Routes
-app.get("/health", (req: express.Request, res: express.Response) => {
+app.get("/health", (req, res) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
@@ -71,6 +73,7 @@ app.use("/api/recommendations", recommendationRouter);
 app.use("/api/user", userRouter);
 app.use("/api/reports", reportRouter);
 app.use("/api/quote", quoteRouter);
+app.use("/api/admin", adminRouter);
 
 // Error handling middleware
 app.use(errorHandler);
@@ -80,6 +83,11 @@ const startServer = async () => {
   try {
     // Connect to MongoDB first
     await connectDB();
+
+    // Seed default admin (development only)
+    if (shouldSeedAdmin()) {
+      await seedDefaultAdmin();
+    }
 
     // Then start the server
     const PORT = process.env.PORT || 3001;

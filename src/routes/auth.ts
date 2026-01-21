@@ -1,4 +1,4 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { register, login, logout, updateProfile } from "../controllers/authController"
 
 //middleware - basically checkpoints
@@ -16,7 +16,7 @@ router.post("/login", login);
 router.post("/logout", auth, logout);
 
 //GET /auth/me
-router.get("/me", auth, (req: Request, res: Response) => {
+router.get("/me", auth, (req, res) => {
     res.json({ user: req.user })
 })
 
